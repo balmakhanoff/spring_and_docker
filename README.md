@@ -23,6 +23,7 @@ cd spring_and_docker
    ```sh
    docker-compose up --build
    ```
+3. ApiGateway сервис поднимается на http://localhost:8080/
 
 ## 📌 API
 
