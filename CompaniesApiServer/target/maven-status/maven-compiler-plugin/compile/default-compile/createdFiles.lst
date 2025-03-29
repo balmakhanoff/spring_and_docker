@@ -1,0 +1,7 @@
+com\service1\companiesapiservice\CompanyApiServiceApplication.class
+com\service1\companiesapiservice\dto\PersonDto.class
+com\service1\companiesapiservice\controller\CompanyController.class
+com\service1\companiesapiservice\model\Company.class
+com\service1\companiesapiservice\repository\CompanyRepository.class
+com\service1\companiesapiservice\controller\CompanyController$1.class
+com\service1\companiesapiservice\service\CompanyService.class
