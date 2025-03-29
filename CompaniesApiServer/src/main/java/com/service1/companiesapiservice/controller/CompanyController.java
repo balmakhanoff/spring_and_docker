@@ -1,15 +1,23 @@
 package com.service1.companiesapiservice.controller;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.service1.companiesapiservice.dto.PersonDto;
 import com.service1.companiesapiservice.model.Company;
 import com.service1.companiesapiservice.service.CompanyService;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.List;
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/companies")
@@ -45,15 +53,27 @@ public class CompanyController {
         return ResponseEntity.noContent().build();
     }
 
+    //    @GetMapping("/{id}/employees")
+//    public ResponseEntity<List<PersonDto>> getEmployeesByCompanyId(@PathVariable Long id) {
+//        List<PersonDto> employees = webClientBuilder.build()
+//                .get()
+//                .uri("http://persons-service:8081/persons/by-company/{id}", id)
+//                .retrieve()
+//                .bodyToMono(new ParameterizedTypeReference<List<PersonDto>>() {
+//                })
+//                .block();
+//
+//        return ResponseEntity.ok(employees);
+//    }
     @GetMapping("/{id}/employees")
-    public ResponseEntity<List<PersonDto>> getEmployeesByCompanyId(@PathVariable Long id) {
-        List<PersonDto> employees = webClientBuilder.build()
+    public Mono<ResponseEntity<List<PersonDto>>> getEmployeesByCompanyId(@PathVariable Long id) {
+        return webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8081/persons/by-company/{id}", id)
+                .uri("http://persons-service:8081/persons/by-company/{id}", id)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<PersonDto>>() {})
-                .block();
-
-        return ResponseEntity.ok(employees);
+                .bodyToMono(new ParameterizedTypeReference<List<PersonDto>>() {
+                })
+                .map(ResponseEntity::ok); // ✅ Не блокирует поток
     }
+
 }
