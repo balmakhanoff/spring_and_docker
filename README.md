@@ -88,7 +88,7 @@ cd spring_and_docker
 #### 📄 Пример запроса на изменение кампании `PATCH /companies/{id}`
 ```json
 {
-   "companyId": 1,
-   "personId": 3
+   "companyName": "Microsoft",
+   "budget": 1111.00
 }
 ```
