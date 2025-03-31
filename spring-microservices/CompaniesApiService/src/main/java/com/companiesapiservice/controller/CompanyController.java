@@ -7,6 +7,9 @@ import com.companiesapiservice.dto.CompanyDto;
 import com.companiesapiservice.dto.CompanyPersonsDto;
 import com.companiesapiservice.exception.CompanyNotFoundException;
 import com.companiesapiservice.service.CompanyPersonsService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +28,8 @@ public class CompanyController {
     }
 
     @GetMapping
-    public List<CompanyDto> getAll() {
-        return companyService.getAllCompany();
+    public Page<CompanyDto> getAll(@PageableDefault(size = 10) Pageable pageable) {
+        return companyService.getAllCompany(pageable);
     }
 
     @GetMapping("/{id}")

@@ -2,14 +2,20 @@ package com.personsapiservice.controller;
 
 import com.personsapiservice.dto.PersonDto;
 import com.personsapiservice.exception.PersonNotFoundException;
+import com.personsapiservice.model.Person;
 import com.personsapiservice.repository.PersonRepository;
 import com.personsapiservice.service.PersonService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/persons")
@@ -24,9 +30,13 @@ public class PersonController {
     }
 
     @GetMapping
-    public List<PersonDto> getAll() {
-        return personService.getAllPersons();
+    public Page<PersonDto> getAll(@PageableDefault(size = 10) Pageable pageable) {
+        /* Example of query
+           GET /persons?page=0&size=10&sort=firstName,asc
+        */
+        return personService.getAllPersons(pageable);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PersonDto> getPersonById(@PathVariable Long id) {

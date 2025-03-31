@@ -1,12 +1,13 @@
 package com.personsapiservice.service;
 
 import com.personsapiservice.dto.PersonDto;
-import com.personsapiservice.exception.GlobalExceptionHandler;
 import com.personsapiservice.exception.PersonNotFoundException;
 import com.personsapiservice.model.Person;
 import com.personsapiservice.repository.PersonRepository;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,11 +29,18 @@ public class PersonService {
         this.restClient = restClient;
     }
 
-    public List<PersonDto> getAllPersons() {
-        log.info("Получение списка всех пользователей");
-        List<PersonDto> persons = personRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
-        log.info("Найдено {} пользователей", persons.size());
-        return persons;
+    //    public List<PersonDto> getAllPersons() {
+//        log.info("Получение списка всех пользователей");
+//        List<PersonDto> persons = personRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+//        log.info("Найдено {} пользователей", persons.size());
+//        return persons;
+//    }
+    public Page<PersonDto> getAllPersons(Pageable pageable) {
+        log.info("Получение списка всех пользователей, страница: {}, размер страницы: {}", pageable.getPageNumber(), pageable.getPageSize());
+        Page<Person> personPage = personRepository.findAll(pageable);
+        Page<PersonDto> personDtoPage = personPage.map(this::toDto);
+        log.info("Найдено {} пользователей на текущей странице", personDtoPage.getNumberOfElements());
+        return personDtoPage;
     }
 
     public Optional<PersonDto> getPersonById(Long id) {

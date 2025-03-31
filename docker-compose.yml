@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: personsdb
     ports:
       - "5432:5432"
     volumes:
@@ -27,67 +27,69 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_DB: companiesdb
     ports:
       - "5433:5432"
     volumes:
       - postgres_data2:/var/lib/postgresql/data
+    networks:
+      - mynetwork
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       retries: 5
 
-#  persons-service:
-#    build: ./spring-microservices/PersonsApiService
-#    container_name: persons-service
-#    restart: always
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydatabase
-#      SPRING_DATASOURCE_USERNAME: postgres
-#      SPRING_DATASOURCE_PASSWORD: postgres
-#      SPRING_APPLICATION_JSON: '{"server.port":8081}'
-#    ports:
-#      - "8081:8081"
-#    networks:
-#      - mynetwork
-#
-#  companies-service:
-#    build: ./spring-microservices/CompaniesApiService
-#    container_name: companies-service
-#    restart: always
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      persons-service:
-#        condition: service_started
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydatabase
-#      SPRING_DATASOURCE_USERNAME: postgres
-#      SPRING_DATASOURCE_PASSWORD: postgres
-#      SPRING_APPLICATION_JSON: '{"server.port":8082}'
-#    ports:
-#      - "8082:8082"
-#    networks:
-#      - mynetwork
-#
-#  api-gateway:
-#    build: ./spring-microservices/ApiGatewayService
-#    container_name: api-gateway
-#    restart: always
-#    depends_on:
-#      persons-service:
-#        condition: service_started
-#      companies-service:
-#        condition: service_started
-#    environment:
-#      SPRING_APPLICATION_JSON: '{"server.port":8080}'
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - mynetwork
+  persons-service:
+    build: ./spring-microservices/PersonsApiService
+    container_name: persons-service
+    restart: always
+    depends_on:
+      postgres_db1:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db1:5432/personsdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_APPLICATION_JSON: '{"server.port":8081}'
+    ports:
+      - "8081:8081"
+    networks:
+      - mynetwork
+
+  companies-service:
+    build: ./spring-microservices/CompaniesApiService
+    container_name: companies-service
+    restart: always
+    depends_on:
+      postgres_db2:
+        condition: service_healthy
+      persons-service:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db2:5432/companiesdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_APPLICATION_JSON: '{"server.port":8082}'
+    ports:
+      - "8082:8082"
+    networks:
+      - mynetwork
+
+  api-gateway:
+    build: ./spring-microservices/ApiGatewayService
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      persons-service:
+        condition: service_started
+      companies-service:
+        condition: service_started
+    environment:
+      SPRING_APPLICATION_JSON: '{"server.port":8080}'
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:

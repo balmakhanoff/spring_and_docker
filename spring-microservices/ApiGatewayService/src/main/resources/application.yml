@@ -6,11 +6,31 @@ spring:
     gateway:
       routes:
         - id: persons-service
-          uri: http://persons-service:8081
+          uri: lb://persons-service
           predicates:
             - Path=/persons/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, SERVICE_UNAVAILABLE
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2
 
         - id: companies-service
-          uri: http://companies-service:8082
+          uri: lb://companies-service
           predicates:
               - Path=/companies/**
+          filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, SERVICE_UNAVAILABLE
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 100ms
+                  maxBackoff: 500ms
+                  factor: 2

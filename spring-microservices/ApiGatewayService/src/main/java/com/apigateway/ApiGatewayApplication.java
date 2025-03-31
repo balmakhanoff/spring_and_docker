@@ -8,6 +8,10 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class ApiGatewayApplication {
+    String personsServiceBaseUrlForLocalhost = "http://localhost:8081";
+    String companiesServiceBaseurlForLocalhost = "http://localhost:8082";
+    String personsServiceBaseUrlForDocker = "http://persons-service:8081";
+    String companiesServiceBaseurlForDocker = "http://companies-service:8082";
 
     public static void main(String[] args) {
         SpringApplication.run(ApiGatewayApplication.class, args);
@@ -17,9 +21,9 @@ public class ApiGatewayApplication {
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("persons-service", r -> r.path("/persons/**")
-                        .uri("http://persons-service:8081"))
+                        .uri(this.personsServiceBaseUrlForDocker))
                 .route("companies-service", r -> r.path("/companies/**")
-                        .uri("http://companies-service:8082"))
+                        .uri(this.companiesServiceBaseurlForDocker))
                 .build();
     }
 }

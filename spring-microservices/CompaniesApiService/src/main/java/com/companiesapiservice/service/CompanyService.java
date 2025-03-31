@@ -5,6 +5,8 @@ import com.companiesapiservice.model.Company;
 import com.companiesapiservice.dto.CompanyDto;
 import com.companiesapiservice.repository.CompanyRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +23,18 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public List<CompanyDto> getAllCompany() {
-        log.info("Получение списка всех компаний");
-        List<CompanyDto> companies = companyRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
-        log.info("Найдено {} компаний", companies.size());
-        return companies;
+    //    public List<CompanyDto> getAllCompany() {
+//        log.info("Получение списка всех компаний");
+//        List<CompanyDto> companies = companyRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+//        log.info("Найдено {} компаний", companies.size());
+//        return companies;
+//    }
+    public Page<CompanyDto> getAllCompany(Pageable pageable) {
+        log.info("Получение списка всех кампаний, страница: {}, размер страницы: {}", pageable.getPageNumber(), pageable.getPageSize());
+        Page<Company> companyPage = companyRepository.findAll(pageable);
+        Page<CompanyDto> companyDtoPage = companyPage.map(this::toDto);
+        log.info("Найдено {} кампаний на текущей странице", companyDtoPage.getNumberOfElements());
+        return companyDtoPage;
     }
 
     public Optional<CompanyDto> getCompanyById(Long id) {
