@@ -1,5 +1,0 @@
-com\service2\personsapiservice\model\Person.class
-com\service2\personsapiservice\controller\PersonController.class
-com\service2\personsapiservice\repository\PersonRepository.class
-com\service2\personsapiservice\PersonApiServiceApplication.class
-com\service2\personsapiservice\service\PersonService.class
