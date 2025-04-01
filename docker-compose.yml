@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  eureka-service:
+    build: ./spring-microservices/EurekaService
+    container_name: eureka-service
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - mynetwork
+    environment:
+      SPRING_APPLICATION_JSON: '{"server.port":8761}'
+
   postgres_db1:
     image: postgres:16
     container_name: postgres_db1
@@ -44,13 +55,19 @@ services:
     container_name: persons-service
     restart: always
     depends_on:
+      eureka-service:
+        condition: service_started
       postgres_db1:
         condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db1:5432/personsdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_APPLICATION_JSON: '{"server.port":8081}'
+      SPRING_APPLICATION_JSON: '{
+      "server.port":8081,
+      "eureka.client.service-url.defaultZone": "http://eureka-service:8761/eureka/"
+      }'
+      HOSTNAME: persons-service
     ports:
       - "8081:8081"
     networks:
@@ -61,6 +78,8 @@ services:
     container_name: companies-service
     restart: always
     depends_on:
+      eureka-service:
+        condition: service_started
       postgres_db2:
         condition: service_healthy
       persons-service:
@@ -69,7 +88,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db2:5432/companiesdb
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_APPLICATION_JSON: '{"server.port":8082}'
+      SPRING_APPLICATION_JSON: '{
+      "server.port":8082,
+      "eureka.client.service-url.defaultZone": "http://eureka-service:8761/eureka/"
+      }'
+      HOSTNAME: companies-service
     ports:
       - "8082:8082"
     networks:
@@ -80,12 +103,18 @@ services:
     container_name: api-gateway
     restart: always
     depends_on:
+      eureka-service:
+        condition: service_started
       persons-service:
         condition: service_started
       companies-service:
         condition: service_started
     environment:
-      SPRING_APPLICATION_JSON: '{"server.port":8080}'
+      SPRING_APPLICATION_JSON: '{
+      "server.port":8080,
+      "eureka.client.service-url.defaultZone": "http://eureka-service:8761/eureka/"
+      }'
+      HOSTNAME: api-gateway
     ports:
       - "8080:8080"
     networks:

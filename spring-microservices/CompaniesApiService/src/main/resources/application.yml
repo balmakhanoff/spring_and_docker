@@ -4,7 +4,8 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres_db2:5432/companiesdb
+#    url: jdbc:postgresql://postgres_db2:5432/companiesdb
+    url: ${SPRING_DATASOURCE_URL}
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -16,3 +17,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: ${HOSTNAME}

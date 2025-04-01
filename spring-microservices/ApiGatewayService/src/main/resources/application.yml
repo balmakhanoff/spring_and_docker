@@ -2,6 +2,9 @@ server:
   port: ${SERVER_PORT}
 
 spring:
+  application:
+    name: api-gateway
+
   cloud:
     gateway:
       routes:
@@ -34,3 +37,13 @@ spring:
                   firstBackoff: 100ms
                   maxBackoff: 500ms
                   factor: 2
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    hostname: ${HOSTNAME}
